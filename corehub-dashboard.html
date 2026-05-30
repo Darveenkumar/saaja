@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COREHUB</title>
+<style>
+:root{--bg:#06080f;--bg2:#0d1117;--bg3:#161b22;--tx:#e6edf3;--tx2:#8b949e;--tx3:#484f58;--acc:#0ea5e9;--brd:rgba(255,255,255,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:2rem}
+.wrap{max-width:700px;margin:0 auto;position:relative;padding-bottom:9rem}
+.hdr{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.logo{font-size:28px;font-weight:700;letter-spacing:-.5px}
+.logo span{color:var(--acc)}
+.sub{font-size:11px;color:var(--tx3);margin-top:2px;letter-spacing:1px}
+.alert{display:none;align-items:center;gap:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);border-radius:8px;padding:10px 14px;margin-bottom:1.5rem}
+.alert-icon{color:#ef4444;font-size:18px;flex-shrink:0}
+.alert-text{font-size:13px;color:#fca5a5;flex:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+.bar-track{background:rgba(255,255,255,.04);border-radius:4px;height:7px;overflow:hidden;margin-top:4px}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.loading{text-align:center;padding:4rem 1rem;color:var(--tx2);font-size:14px}
+.loading-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin:0 3px;animation:ldot 1.4s ease-in-out infinite}
+.loading-dot:nth-child(2){animation-delay:.2s}
+.loading-dot:nth-child(3){animation-delay:.4s}
+.error{text-align:center;padding:3rem 1rem;color:#fca5a5;font-size:14px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.12)}
+.total-card{background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+.total-num{font-size:32px;font-weight:700;color:var(--acc)}
+.total-label{font-size:13px;color:var(--tx2)}
+@keyframes ldot{0%,80%,100%{transform:scale(.4);opacity:.3}40%{transform:scale(1);opacity:1}}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes blk{0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.05)}}
+@keyframes pls{0%,100%{opacity:.9}50%{opacity:.3}}
+.rflt{animation:flt 3s ease-in-out infinite}
+.re1,.re2{transform-origin:50% 50%;transform-box:fill-box}
+.re1{animation:blk 4.5s ease-in-out infinite}
+.re2{animation:blk 4.5s ease-in-out infinite .25s}
+.rp1{animation:pls 2s ease-in-out infinite}
+.rp2{animation:pls 2s ease-in-out infinite .4s}
+.rp3{animation:pls 2s ease-in-out infinite .8s}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div id="loadingState" class="loading">
+    <div style="margin-bottom:12px">
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+    </div>
+    Fetching compliance data from COREHUB...
+  </div>
+
+  <div id="errorState" class="error" style="display:none"></div>
+
+  <div id="dashboard" style="display:none">
+
+    <div class="hdr">
+      <div style="flex:1">
+        <div class="logo"><span>CO</span>RE<span>HUB</span></div>
+        <div class="sub">COmpliance · REnewal · Hub</div>
+      </div>
+      <div style="text-align:center">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="5"/>
+          <circle id="gaugeArc" cx="36" cy="36" r="28" fill="none" stroke="#64748b" stroke-width="5" stroke-dasharray="0 176" transform="rotate(-90 36 36)" stroke-linecap="round"/>
+          <text id="gaugeTxt" x="36" y="41" text-anchor="middle" font-size="14" font-weight="600" fill="#e6edf3">--%</text>
+        </svg>
+        <div id="gaugeLbl" style="font-size:11px;color:#8b949e">Loading</div>
+      </div>
+    </div>
+
+    <div id="alertBanner" class="alert">
+      <span class="alert-icon">&#9888;</span>
+      <span id="alertText" class="alert-text"></span>
+    </div>
+
+    <div id="totalCard" class="total-card">
+      <div class="total-num" id="totalNum">0</div>
+      <div>
+        <div style="font-size:14px;font-weight:600">Total items</div>
+        <div class="total-label">Support contract expiry tracking</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div style="position:relative;height:220px">
+          <canvas id="myChart"></canvas>
+        </div>
+        <div id="legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:11px;color:#8b949e"></div>
+      </div>
+      <div id="stats" style="padding-top:8px"></div>
+    </div>
+
+  </div>
+
+  <div id="cleoWrap" style="position:absolute;bottom:0;right:0;width:80px;cursor:pointer;z-index:5;display:none">
+    <div id="cleoBubble" style="position:absolute;bottom:100%;right:0;margin-bottom:8px;width:172px;background:#161b22;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;font-size:11px;line-height:1.45;color:#e6edf3">
+      <span id="cleoText">Analysing your data...</span>
+    </div>
+    <svg class="rflt" viewBox="0 0 80 112" width="80" height="112">
+      <line x1="40" y1="4" x2="40" y2="16" stroke="rgba(255,255,255,.15)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="40" cy="3" r="4" class="rp1" fill="#0ea5e9"/>
+      <rect x="17" y="16" width="46" height="34" rx="11" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+      <rect class="re1" x="24" y="25" width="11" height="11" rx="3" fill="#0ea5e9"/>
+      <rect class="re2" x="45" y="25" width="11" height="11" rx="3" fill="#0ea5e9"/>
+      <path d="M30 40 Q40 46 50 40" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="34" y="50" width="12" height="6" rx="2" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+      <rect x="13" y="56" width="54" height="44" rx="9" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+      <rect x="24" y="64" width="32" height="20" rx="5" fill="#0d1117" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <circle cx="32" cy="74" r="4" class="rp1" fill="#0ea5e9"/>
+      <circle id="moodDot" cx="40" cy="74" r="4" class="rp2" fill="#64748b"/>
+      <circle cx="48" cy="74" r="4" class="rp3" fill="#0ea5e9"/>
+      <rect x="2" y="58" width="11" height="29" rx="5" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+      <rect x="67" y="58" width="11" height="29" rx="5" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+      <rect x="22" y="100" width="12" height="9" rx="4" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+      <rect x="46" y="100" width="12" height="9" rx="4" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+    </svg>
+    <div style="text-align:center;font-size:10px;font-weight:600;color:#484f58;margin-top:2px">CLEO</div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+
+/* =============================================
+   CONFIGURATION — Update these for your site
+   ============================================= */
+var SITE_URL  = '/sites/EISDSite';
+var LIST_GUID = '10c626f3-3000-4ccf-bf87-48fd468f7c26';
+var DATE_COL  = 'SupportContractExpiryDate';
+
+/* =============================================
+   DO NOT EDIT BELOW THIS LINE
+   ============================================= */
+var LABELS = ['Expired', '< 3 months', '3\u20136 months', '> 6 months', 'No expiry date'];
+var COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#64748b'];
+
+function fetchAllItems() {
+  var items = [];
+  var url = SITE_URL + "/_api/web/lists(guid'" + LIST_GUID + "')/items?$select=" + DATE_COL + "&$top=5000";
+
+  function getPage(pageUrl) {
+    return fetch(pageUrl, {
+      headers: { 'Accept': 'application/json;odata=nometadata' }
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('SharePoint returned ' + res.status + '. Check the list GUID and site URL.');
+      return res.json();
+    })
+    .then(function(data) {
+      items = items.concat(data.value);
+      if (data['odata.nextLink']) return getPage(data['odata.nextLink']);
+      return items;
+    });
+  }
+
+  return getPage(url);
+}
+
+function calcBuckets(items) {
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  var m3 = new Date(today);
+  m3.setMonth(m3.getMonth() + 3);
+
+  var m6 = new Date(today);
+  m6.setMonth(m6.getMonth() + 6);
+
+  var c = { expired: 0, lt3: 0, m3t6: 0, gt6: 0, noDate: 0 };
+
+  items.forEach(function(item) {
+    var val = item[DATE_COL];
+    if (!val) { c.noDate++; return; }
+    var d = new Date(val);
+    if (d < today) c.expired++;
+    else if (d < m3) c.lt3++;
+    else if (d < m6) c.m3t6++;
+    else c.gt6++;
+  });
+
+  return c;
+}
+
+function render(c) {
+  var total = c.expired + c.lt3 + c.m3t6 + c.gt6 + c.noDate;
+  var vals = [c.expired, c.lt3, c.m3t6, c.gt6, c.noDate];
+  var score = total > 0 ? Math.round((total - c.expired) / total * 100) : 100;
+
+  var circ = 2 * Math.PI * 28;
+  var scoreColor = score >= 75 ? '#22c55e' : score >= 50 ? '#f97316' : '#ef4444';
+  var scoreLabel = score >= 75 ? 'Healthy' : score >= 50 ? 'At risk' : 'Critical';
+
+  document.getElementById('gaugeArc').setAttribute('stroke-dasharray', (circ * score / 100).toFixed(1) + ' ' + circ.toFixed(1));
+  document.getElementById('gaugeArc').setAttribute('stroke', scoreColor);
+  document.getElementById('gaugeTxt').textContent = score + '%';
+  document.getElementById('gaugeLbl').textContent = scoreLabel;
+
+  if (c.expired > 0) {
+    document.getElementById('alertBanner').style.display = 'flex';
+    document.getElementById('alertText').textContent = c.expired + ' item' + (c.expired !== 1 ? 's' : '') + ' expired \u2014 immediate action required';
+  }
+
+  document.getElementById('totalNum').textContent = total;
+
+  new Chart(document.getElementById('myChart'), {
+    type: 'doughnut',
+    data: {
+      labels: LABELS,
+      datasets: [{
+        data: vals,
+        backgroundColor: COLORS,
+        borderWidth: 2,
+        borderColor: '#06080f',
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              var pct = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
+              return ' ' + ctx.label + ': ' + ctx.raw + ' (' + pct + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+
+  document.getElementById('legend').innerHTML = LABELS.map(function(lb, i) {
+    return '<span style="display:flex;align-items:center;gap:3px">' +
+      '<span style="width:9px;height:9px;border-radius:2px;background:' + COLORS[i] + ';flex-shrink:0"></span>' +
+      lb + ': ' + vals[i] + '</span>';
+  }).join('');
+
+  document.getElementById('stats').innerHTML = LABELS.map(function(lb, i) {
+    var p = total > 0 ? Math.round(vals[i] / total * 100) : 0;
+    return '<div style="margin-bottom:12px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">' +
+        '<span style="color:#8b949e">' + lb + '</span>' +
+        '<span style="font-weight:600;color:' + COLORS[i] + '">' + vals[i] +
+          '<span style="font-weight:400;color:#484f58;font-size:11px"> (' + p + '%)</span>' +
+        '</span>' +
+      '</div>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + p + '%;background:' + COLORS[i] + '"></div></div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('moodDot').setAttribute('fill', scoreColor);
+
+  var msgs = [
+    c.expired + ' item' + (c.expired !== 1 ? 's' : '') + ' expired \u2014 action needed!',
+    c.lt3 + ' expiring in under 3 months',
+    'Compliance score: ' + score + '%',
+    c.gt6 + ' items safe with 6+ months',
+    total + ' items tracked in total'
+  ];
+  var idx = 0;
+  document.getElementById('cleoText').textContent = msgs[0];
+
+  setInterval(function() {
+    idx = (idx + 1) % msgs.length;
+    document.getElementById('cleoText').textContent = msgs[idx];
+  }, 5000);
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('cleoWrap').style.display = 'block';
+}
+
+function showError(msg) {
+  document.getElementById('loadingState').style.display = 'none';
+  var el = document.getElementById('errorState');
+  el.style.display = 'block';
+  el.innerHTML = '<div style="font-size:18px;margin-bottom:8px">&#9888;</div>' + msg;
+}
+
+function useMockData() {
+  render({ expired: 17, lt3: 13, m3t6: 10, gt6: 22, noDate: 4 });
+  document.getElementById('cleoText').textContent = 'Running with sample data (not in SharePoint)';
+}
+
+fetchAllItems()
+  .then(calcBuckets)
+  .then(render)
+  .catch(function(err) {
+    if (err.message && (err.message.indexOf('Failed to fetch') > -1 || err.message.indexOf('NetworkError') > -1 || err.message.indexOf('fetch') > -1)) {
+      useMockData();
+    } else {
+      showError('Could not load data: ' + err.message + '<br><br><span style="font-size:12px;color:#8b949e">Make sure this page is hosted on the SharePoint site and the list GUID is correct.</span>');
+    }
+  });
+
+</script>
+</body>
+</html>

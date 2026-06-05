@@ -3,305 +3,943 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COREHUB</title>
+<title>CLEO Retro Rocket Flame Widget</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=500;700&family=Syne:wght=800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#06080f;--bg2:#0d1117;--bg3:#161b22;--tx:#e6edf3;--tx2:#8b949e;--tx3:#484f58;--acc:#0ea5e9;--brd:rgba(255,255,255,.08)}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:2rem}
-.wrap{max-width:700px;margin:0 auto;position:relative;padding-bottom:9rem}
-.hdr{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
-.logo{font-size:28px;font-weight:700;letter-spacing:-.5px}
-.logo span{color:var(--acc)}
-.sub{font-size:11px;color:var(--tx3);margin-top:2px;letter-spacing:1px}
-.alert{display:none;align-items:center;gap:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);border-radius:8px;padding:10px 14px;margin-bottom:1.5rem}
-.alert-icon{color:#ef4444;font-size:18px;flex-shrink:0}
-.alert-text{font-size:13px;color:#fca5a5;flex:1}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
-.bar-track{background:rgba(255,255,255,.04);border-radius:4px;height:7px;overflow:hidden;margin-top:4px}
-.bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
-.loading{text-align:center;padding:4rem 1rem;color:var(--tx2);font-size:14px}
-.loading-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin:0 3px;animation:ldot 1.4s ease-in-out infinite}
-.loading-dot:nth-child(2){animation-delay:.2s}
-.loading-dot:nth-child(3){animation-delay:.4s}
-.error{text-align:center;padding:3rem 1rem;color:#fca5a5;font-size:14px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.12)}
-.total-card{background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
-.total-num{font-size:32px;font-weight:700;color:var(--acc)}
-.total-label{font-size:13px;color:var(--tx2)}
-@keyframes ldot{0%,80%,100%{transform:scale(.4);opacity:.3}40%{transform:scale(1);opacity:1}}
-@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes blk{0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.05)}}
-@keyframes pls{0%,100%{opacity:.9}50%{opacity:.3}}
-.rflt{animation:flt 3s ease-in-out infinite}
-.re1,.re2{transform-origin:50% 50%;transform-box:fill-box}
-.re1{animation:blk 4.5s ease-in-out infinite}
-.re2{animation:blk 4.5s ease-in-out infinite .25s}
-.rp1{animation:pls 2s ease-in-out infinite}
-.rp2{animation:pls 2s ease-in-out infinite .4s}
-.rp3{animation:pls 2s ease-in-out infinite .8s}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%;
+  height: 150px;
+  max-height: 150px;
+  background: transparent !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Master Widget Boundary Anchor Frame */
+.widget-wrapper {
+  position: relative;
+  display: inline-block;
+  padding: 40px;
+  min-width: 680px;
+  min-height: 440px;
+  border: 1px dashed rgba(255, 255, 255, 0.02); 
+  cursor: default;
+  transform: scale(0.5);
+  transform-origin: top left;
+}
+
+/* CLEO Primary Kinetic Chassis Container */
+.cleo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  left: 30px;
+  top: 50px;
+  z-index: 10;
+  width: 170px;
+  transform-origin: bottom center;
+  opacity: 0;
+  transform: translateY(340px) scale(0.85);
+  pointer-events: none;
+}
+
+/* Slower entry layout */
+.cleo-container.rocket-spawning {
+  opacity: 1;
+  animation: rocketLandingStyle 1.05s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes rocketLandingStyle {
+  0% { transform: translateY(340px) scale(0.7) scaleY(1.3); opacity: 0.2; }
+  65% { transform: translateY(-28px) scale(1.04) scaleY(0.92); opacity: 1; }
+  82% { transform: translateY(4px) scale(0.98) scaleY(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1) scaleY(1); opacity: 1; }
+}
+
+/* Persistent Hovering Loop */
+.cleo-container.ready {
+  opacity: 1;
+  animation: robotHoverEngine 4.5s ease-in-out infinite;
+}
+@keyframes robotHoverEngine {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.5deg); }
+}
+
+/* Focused Cursor Interactions */
+.cleo-container.ready.cleo-body-hovered {
+  transform: scale(1.03) rotate(1deg) translateY(-4px) !important;
+}
+
+.cleo-svg-wrap {
+  width: 100%;
+  transition: filter 0.35s ease;
+}
+
+/* Interactive SVG Group Body Hitbox Anchor */
+.cleo-interactive-target {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Mechanical Pivot Arms Matrix */
+.left-side-arm-group, .right-side-arm-group {
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.left-side-arm-group { transform-origin: 92px 178px; }
+.right-side-arm-group { transform-origin: 188px 178px; }
+
+#earLeft, #earRight { transition: fill 0.35s ease; }
+
+/* ─── DYNAMIC TRANSITIONAL MOOD LOOPS ─── */
+
+/* Cheeky Loop */
+.widget-wrapper.mode-cheeky .left-side-arm-group {
+  animation: cheekyWave 0.45s ease-in-out infinite alternate;
+}
+@keyframes cheekyWave {
+  0% { transform: rotate(5deg); }
+  100% { transform: rotate(48deg); }
+}
+.widget-wrapper.mode-cheeky .right-side-arm-group {
+  transform: rotate(-18deg) translateX(-2px);
+}
+.widget-wrapper.mode-cheeky #blushLeft, .widget-wrapper.mode-cheeky #blushRight {
+  animation: blushPulse 1.6s ease-in-out infinite;
+}
+@keyframes blushPulse { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.45; } }
+
+/* Panic Loop */
+.widget-wrapper.mode-panic .cleo-container {
+  animation: panicShake 0.1s linear infinite !important;
+}
+@keyframes panicShake {
+  0%, 100% { transform: translate(1px, 1px) rotate(1.5deg); }
+  20% { transform: translate(-1px, 0px) rotate(2.5deg); }
+  40% { transform: translate(1px, -1px) rotate(0.5deg); }
+}
+.widget-wrapper.mode-panic .left-side-arm-group {
+  animation: flailLeft 0.11s ease-in-out infinite alternate !important;
+}
+@keyframes flailLeft { 0% { transform: rotate(-8deg); } 100% { transform: rotate(68deg); } }
+
+.widget-wrapper.mode-panic .right-side-arm-group {
+  animation: flailRight 0.11s ease-in-out infinite alternate !important;
+}
+@keyframes flailRight { 0% { transform: rotate(12deg); } 100% { transform: rotate(-58deg); } }
+
+/* Dreamy Loop */
+.widget-wrapper.mode-dreamy .cleo-container {
+  animation: dreamyDrift 5s ease-in-out infinite !important;
+}
+@keyframes dreamyDrift {
+  0%, 100% { transform: scale(1.03) rotate(0.5deg) translateY(-2px); }
+  50% { transform: scale(1.03) rotate(2deg) translateY(6px); }
+}
+.widget-wrapper.mode-dreamy .left-side-arm-group {
+  animation: dreamySwayLeft 4s ease-in-out infinite alternate !important;
+}
+@keyframes dreamySwayLeft { 0% { transform: rotate(-5deg); } 100% { transform: rotate(12deg); } }
+
+.widget-wrapper.mode-dreamy .right-side-arm-group {
+  animation: dreamySwayRight 4s ease-in-out infinite alternate !important;
+}
+@keyframes dreamySwayRight { 0% { transform: rotate(5deg); } 100% { transform: rotate(-12deg); } }
+
+/* STYLISH HORIZONTAL ROCKET FLY-RIGHT EXIT */
+.cleo-container.rocket-jetting-right {
+  animation: rocketFlyRightExit 0.75s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important;
+  pointer-events: none !important;
+}
+@keyframes rocketFlyRightExit {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  22% { transform: translateY(8px) rotate(-18deg); opacity: 1; } 
+  45% { transform: translateX(40px) translateY(-15px) rotate(52deg) scaleX(1.15); opacity: 1; } 
+  100% { transform: translateX(640px) translateY(-120px) rotate(68deg) scaleX(1.4) scaleY(0.85); opacity: 0; } 
+}
+
+/* Integrated Thruster Flame System */
+#rocketFlameGroup {
+  opacity: 0;
+  transform: translateY(-8px) scaleY(0.5);
+  transform-origin: 140px 266px;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.engine-firing #rocketFlameGroup {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+}
+
+/* High Fidelity Combustion Flicker Animation */
+.engine-firing .fire-plume-blur-outer {
+  animation: combustionOuterFlicker 0.15s ease-in-out infinite alternate;
+}
+.engine-firing .fire-plume-blur-inner {
+  animation: combustionInnerFlicker 0.09s ease-in-out infinite alternate;
+}
+
+@keyframes combustionOuterFlicker {
+  0% { transform: scaleX(0.96) scaleY(0.95); opacity: 0.85; filter: url(#blurFlameOuter); }
+  100% { transform: scaleX(1.04) scaleY(1.06); opacity: 1; filter: url(#blurFlameOuterDistort); }
+}
+@keyframes combustionInnerFlicker {
+  0% { transform: scaleX(0.95) scaleY(0.97); opacity: 0.9; }
+  100% { transform: scaleX(1.05) scaleY(1.03); opacity: 1; }
+}
+
+/* Eye Blinking Pipeline */
+.eyes-blink circle {
+  animation: blinkScale 0.16s linear forwards;
+}
+@keyframes blinkScale {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.05); }
+}
+
+#visorBg, #robotMouth, #blushLeft, #blushRight, #antennaStem, #antennaGlowNode {
+  transition: fill 0.3s ease, stroke 0.3s ease, d 0.3s ease, opacity 0.3s ease;
+}
+.visor-scanlines { pointer-events: none; }
+
+/* ─── SPEECH BOX SYSTEM ─── */
+.chat-bubble {
+  position: absolute;
+  left: 200px;
+  top: 70px;
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  border-radius: 18px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  max-width: 310px;
+  min-height: 64px;
+  z-index: 5;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  opacity: 0;
+  transform: scale(0.88) translateX(-14px);
+  transform-origin: left center;
+  transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.chat-bubble::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: 24px;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+}
+
+.bubble-cheeky {
+  background: linear-gradient(135deg, rgba(255, 245, 220, 0.12) 0%, rgba(40, 22, 0, 0.55) 100%);
+  border: 1px solid rgba(255, 170, 0, 0.35);
+  box-shadow: 0 20px 44px rgba(20, 8, 0, 0.5), 0 0 24px rgba(255, 170, 0, 0.18);
+  color: #fffaf0;
+}
+.bubble-cheeky::before { border-right: 9px solid rgba(255, 170, 0, 0.35); }
+
+.bubble-panic {
+  background: linear-gradient(135deg, rgba(255, 225, 225, 0.1) 0%, rgba(48, 4, 4, 0.6) 100%);
+  border: 1px solid rgba(255, 60, 60, 0.38);
+  box-shadow: 0 20px 44px rgba(38, 0, 0, 0.55), 0 0 28px rgba(255, 50, 50, 0.22);
+  color: #fff0f0;
+}
+.bubble-panic::before { border-right: 9px solid rgba(255, 60, 60, 0.38); }
+
+.bubble-dreamy {
+  background: linear-gradient(135deg, rgba(215, 220, 255, 0.12) 0%, rgba(20, 12, 50, 0.6) 100%);
+  border: 1px solid rgba(160, 120, 255, 0.38);
+  box-shadow: 0 20px 44px rgba(10, 0, 40, 0.55), 0 0 28px rgba(140, 100, 255, 0.22);
+  color: #f0eeff;
+}
+.bubble-dreamy::before { border-right: 9px solid rgba(160, 120, 255, 0.38); }
+
+.bubble-bye {
+  background: linear-gradient(135deg, rgba(255, 235, 215, 0.15) 0%, rgba(54, 25, 0, 0.65) 100%);
+  border: 1px solid rgba(255, 115, 0, 0.45);
+  box-shadow: 0 20px 44px rgba(40, 15, 0, 0.4), 0 0 24px rgba(255, 115, 0, 0.2);
+  color: #fffbf5;
+}
+.bubble-bye::before { border-right: 9px solid rgba(255, 115, 0, 0.45); }
+
+.widget-wrapper.active-hover .chat-bubble.visible {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+}
+
+#cursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  margin-left: 3px;
+  animation: blink 0.6s infinite;
+  vertical-align: middle;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+.text-highlight-cheeky { color: #ffaa00; font-weight: 700; }
+.text-highlight-panic   { color: #ff3b3b; font-weight: 700; }
+.text-highlight-dreamy  { color: #b899ff; font-weight: 700; }
+.text-highlight-bye     { color: #ff7300; font-weight: 700; }
+
+.spark, .star-particle { position: absolute; pointer-events: none; opacity: 0; z-index: 15; }
+.spark { width: 4px; height: 4px; border-radius: 50%; }
+.star-particle { font-size: 10px; line-height: 1; }
+
+/* ─── DYNAMIC FLOATING UNDER-CURSOR NOTE ─── */
+.cursor-poke-note {
+  position: absolute;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 8.2px;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  padding: 0;
+  white-space: nowrap;
+  box-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  z-index: 999;
+  opacity: 0;
+  transform: translate(12px, 12px) scale(0.85);
+  transition: opacity 0.12s linear, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cursor-poke-note.visible {
+  opacity: 0.85;
+  transform: translate(12px, 12px) scale(1);
+}
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div class="widget-wrapper" id="cleoWidget">
 
-  <div id="loadingState" class="loading">
-    <div style="margin-bottom:12px">
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
+  <div class="cleo-container" id="cleoContainer">
+    <div class="cleo-svg-wrap" id="cleoGlowWrap">
+      <svg viewBox="0 0 280 430" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%">
+        <defs>
+          <radialGradient id="bG" cx="38%" cy="28%" r="68%">
+            <stop offset="0%" stop-color="#f2fbff"/>
+            <stop offset="50%" stop-color="#cfeaf8"/>
+            <stop offset="100%" stop-color="#8fc6e6"/>
+          </radialGradient>
+          <radialGradient id="hG" cx="36%" cy="26%" r="68%">
+            <stop offset="0%" stop-color="#f4fcff"/>
+            <stop offset="45%" stop-color="#bce3f8"/>
+            <stop offset="100%" stop-color="#73bae2"/>
+          </radialGradient>
+          <radialGradient id="vG" gradientUnits="userSpaceOnUse" cx="122" cy="70" r="96">
+            <stop offset="0%" stop-color="#1f63a8"/>
+            <stop offset="50%" stop-color="#093058"/>
+            <stop offset="100%" stop-color="#03102a"/>
+          </radialGradient>
+          <radialGradient id="vGPanic" gradientUnits="userSpaceOnUse" cx="122" cy="70" r="96">
+            <stop offset="0%" stop-color="#6b1212"/>
+            <stop offset="50%" stop-color="#3a0404"/>
+            <stop offset="100%" stop-color="#150000"/>
+          </radialGradient>
+          <radialGradient id="vGDreamy" gradientUnits="userSpaceOnUse" cx="122" cy="70" r="96">
+            <stop offset="0%" stop-color="#2a1668"/>
+            <stop offset="50%" stop-color="#130830"/>
+            <stop offset="100%" stop-color="#060013"/>
+          </radialGradient>
+          <radialGradient id="vGCheeky" gradientUnits="userSpaceOnUse" cx="122" cy="70" r="96">
+            <stop offset="0%" stop-color="#3d2800"/>
+            <stop offset="50%" stop-color="#1e1200"/>
+            <stop offset="100%" stop-color="#0a0500"/>
+          </radialGradient>
+          <radialGradient id="vGBye" gradientUnits="userSpaceOnUse" cx="122" cy="70" r="96">
+            <stop offset="0%" stop-color="#542500"/>
+            <stop offset="50%" stop-color="#2a1000"/>
+            <stop offset="100%" stop-color="#0f0500"/>
+          </radialGradient>
+          
+          <radialGradient id="earGlow" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ff859a"/>
+            <stop offset="75%" stop-color="#f04156"/>
+            <stop offset="100%" stop-color="#b31b2c"/>
+          </radialGradient>
+          <radialGradient id="earGlowCheeky" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ffebaa"/>
+            <stop offset="75%" stop-color="#ffaa00"/>
+            <stop offset="100%" stop-color="#b36e00"/>
+          </radialGradient>
+          <radialGradient id="earGlowPanic" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ff4040"/>
+            <stop offset="75%" stop-color="#c00000"/>
+            <stop offset="100%" stop-color="#600000"/>
+          </radialGradient>
+          <radialGradient id="earGlowDreamy" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#c8a0ff"/>
+            <stop offset="75%" stop-color="#7840d8"/>
+            <stop offset="100%" stop-color="#3010a0"/>
+          </radialGradient>
+          <radialGradient id="earGlowBye" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ffc080"/>
+            <stop offset="75%" stop-color="#ff7300"/>
+            <stop offset="100%" stop-color="#a04000"/>
+          </radialGradient>
+          
+          <linearGradient id="thrusterPlumeOuter" x1="140" y1="265" x2="140" y2="425" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffb700" stop-opacity="0.95"/>
+            <stop offset="20%" stop-color="#ff6a00" stop-opacity="0.8"/>
+            <stop offset="65%" stop-color="#ff3c00" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#ff2200" stop-opacity="0"/>
+          </linearGradient>
+
+          <linearGradient id="thrusterPlumeInner" x1="140" y1="265" x2="140" y2="375" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+            <stop offset="30%" stop-color="#ffff85" stop-opacity="0.95"/>
+            <stop offset="70%" stop-color="#ffb700" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#ff5500" stop-opacity="0"/>
+          </linearGradient>
+          
+          <radialGradient id="gG" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffe080"/><stop offset="100%" stop-color="#c87800"/></radialGradient>
+          <radialGradient id="rG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ff7388" stop-opacity="0.65"/><stop offset="100%" stop-color="#f04156" stop-opacity="0"/></radialGradient>
+          
+          <filter id="blurFlameOuter" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="8.5"/>
+          </filter>
+          <filter id="blurFlameOuterDistort" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="10"/>
+          </filter>
+          <filter id="blurFlameInner" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.5"/>
+          </filter>
+          
+          <filter id="bigGlow"><feGaussianBlur stdDeviation="4" result="bl"/><feMerge><feMergeNode in="bl"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="rgba(0,0,0,.3)"/></filter>
+          <filter id="sh2"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,.2)"/></filter>
+          <pattern id="scanlines" x="0" y="0" width="1" height="3" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="rgba(0,0,0,0.08)"/></pattern>
+        </defs>
+
+        <g id="rocketFlameGroup">
+          <path class="fire-plume-blur-outer" d="M90 264 Q65 330 95 395 Q140 435 140 435 Q140 435 185 395 Q215 330 190 264 Z" fill="url(#thrusterPlumeOuter)" filter="url(#blurFlameOuter)" transform-origin="140px 264px"/>
+          <path class="fire-plume-blur-inner" d="M102 264 Q85 315 110 370 Q140 400 140 400 Q140 400 170 370 Q195 315 178 264 Z" fill="url(#thrusterPlumeInner)" filter="url(#blurFlameInner)" transform-origin="140px 264px"/>
+        </g>
+
+        <ellipse id="baseShadow" cx="140" cy="272" rx="46" ry="6" fill="rgba(0,180,255,.08)"/>
+
+        <g class="cleo-interactive-target" id="cleoBodyTarget">
+          <path d="M85 168 Q80 232 82 266 L198 266 Q200 232 195 168 Q178 154 140 152 Q102 154 85 168Z" fill="url(#bG)" filter="url(#sh)"/>
+
+          <circle cx="114" cy="210" r="9" fill="url(#gG)" filter="url(#sh2)"/>
+          <circle cx="140" cy="210" r="9" fill="url(#gG)" filter="url(#sh2)"/>
+          <circle cx="166" cy="210" r="9" fill="url(#gG)" filter="url(#sh2)"/>
+
+          <rect x="112" y="234" width="56" height="20" rx="8" fill="rgba(0,100,200,.23)" stroke="rgba(0,220,255,.4)" stroke-width="1"/>
+          <text x="140" y="248" text-anchor="middle" font-family="'Syne',sans-serif" font-size="9" font-weight="800" fill="#00dcff" letter-spacing="2.5">CLEO</text>
+
+          <g id="leftSideArm" class="left-side-arm-group">
+            <path d="M87 170 Q60 188 56 220 Q54 238 64 242 Q76 246 82 230 Q88 212 98 186Z" fill="url(#bG)" filter="url(#sh2)"/>
+            <ellipse cx="62" cy="243" rx="13" ry="15" fill="url(#bG)" filter="url(#sh2)"/>
+          </g>
+
+          <g id="rightSideArm" class="right-side-arm-group">
+            <path d="M193 170 Q220 188 224 220 Q226 238 216 242 Q204 246 198 230 Q192 212 182 186Z" fill="url(#bG)" filter="url(#sh2)"/>
+            <ellipse cx="218" cy="243" rx="13" ry="15" fill="url(#bG)" filter="url(#sh2)"/>
+          </g>
+
+          <ellipse cx="140" cy="153" rx="24" ry="6" fill="url(#gG)" filter="url(#sh2)"/>
+          <rect x="124" y="134" width="32" height="22" rx="11" fill="url(#bG)" filter="url(#sh2)"/>
+
+          <ellipse cx="140" cy="80" rx="68" ry="64" fill="url(#hG)" filter="url(#sh)"/>
+
+          <rect id="antennaStem" x="138" y="10" width="4" height="10" rx="2" fill="#00dcff"/>
+          <ellipse id="antennaGlowNode" cx="140" cy="9" rx="6" ry="5" fill="#00dcff" filter="url(#bigGlow)"/>
+
+          <circle id="earLeft"  cx="66"  cy="84" r="14" fill="url(#earGlow)"  filter="url(#sh2)"/>
+          <circle id="earRight" cx="214" cy="84" r="14" fill="url(#earGlow)" filter="url(#sh2)"/>
+
+          <rect id="visorBg" x="78" y="54" width="124" height="62" rx="28" fill="url(#vG)"/>
+          <rect class="visor-scanlines" x="78" y="54" width="124" height="62" rx="28" fill="rgba(0,0,0,0.08)" opacity="1"/>
+
+          <ellipse id="blushLeft"  cx="94"  cy="98" rx="10" ry="5" fill="url(#rG)" opacity="0.9"/>
+          <ellipse id="blushRight" cx="186" cy="98" rx="10" ry="5" fill="url(#rG)" opacity="0.9"/>
+
+          <g id="eyeGroup">
+            <g id="leftEyePair" transform-origin="112px 84px">
+              <circle cx="112" cy="84" r="14" fill="white"/>
+              <circle id="eyeLeftPupil"  cx="112" cy="84" r="9.5" fill="#081022"/>
+              <circle id="eyeLeftShine"  cx="109.5" cy="81.5" r="3.2" fill="white"/>
+              <circle cx="115" cy="87" r="1.5" fill="white" opacity="0.6"/>
+            </g>
+
+            <g id="rightEyePair" transform-origin="168px 84px">
+              <circle cx="168" cy="84" r="14" fill="white"/>
+              <circle id="eyeRightPupil" cx="168" cy="84" r="9.5" fill="#081022"/>
+              <circle id="eyeRightShine" cx="165.5" cy="81.5" r="3.2" fill="white"/>
+              <circle cx="171" cy="87" r="1.5" fill="white" opacity="0.6"/>
+            </g>
+          </g>
+
+          <path id="robotMouth" d="M130 102 Q140 110 150 102" stroke="#5ef0ff" stroke-width="3" stroke-linecap="round" fill="none"/>
+        </g>
+      </svg>
     </div>
-    Fetching compliance data from COREHUB...
   </div>
 
-  <div id="errorState" class="error" style="display:none"></div>
-
-  <div id="dashboard" style="display:none">
-
-    <div class="hdr">
-      <div style="flex:1">
-        <div class="logo"><span>CO</span>RE<span>HUB</span></div>
-        <div class="sub">COmpliance · REnewal · Hub</div>
-      </div>
-      <div style="text-align:center">
-        <svg width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="5"/>
-          <circle id="gaugeArc" cx="36" cy="36" r="28" fill="none" stroke="#64748b" stroke-width="5" stroke-dasharray="0 176" transform="rotate(-90 36 36)" stroke-linecap="round"/>
-          <text id="gaugeTxt" x="36" y="41" text-anchor="middle" font-size="14" font-weight="600" fill="#e6edf3">--%</text>
-        </svg>
-        <div id="gaugeLbl" style="font-size:11px;color:#8b949e">Loading</div>
-      </div>
-    </div>
-
-    <div id="alertBanner" class="alert">
-      <span class="alert-icon">&#9888;</span>
-      <span id="alertText" class="alert-text"></span>
-    </div>
-
-    <div id="totalCard" class="total-card">
-      <div class="total-num" id="totalNum">0</div>
-      <div>
-        <div style="font-size:14px;font-weight:600">Total items</div>
-        <div class="total-label">Support contract expiry tracking</div>
-      </div>
-    </div>
-
-    <div class="grid">
-      <div>
-        <div style="position:relative;height:220px">
-          <canvas id="myChart"></canvas>
-        </div>
-        <div id="legend" style="display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:11px;color:#8b949e"></div>
-      </div>
-      <div id="stats" style="padding-top:8px"></div>
-    </div>
-
+  <div class="chat-bubble" id="chatBubble">
+    <span id="typedText"><span id="cursor"></span></span>
   </div>
 
-  <div id="cleoWrap" style="position:absolute;bottom:0;right:0;width:80px;cursor:pointer;z-index:5;display:none">
-    <div id="cleoBubble" style="position:absolute;bottom:100%;right:0;margin-bottom:8px;width:172px;background:#161b22;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;font-size:11px;line-height:1.45;color:#e6edf3">
-      <span id="cleoText">Analysing your data...</span>
-    </div>
-    <svg class="rflt" viewBox="0 0 80 112" width="80" height="112">
-      <line x1="40" y1="4" x2="40" y2="16" stroke="rgba(255,255,255,.15)" stroke-width="2.5" stroke-linecap="round"/>
-      <circle cx="40" cy="3" r="4" class="rp1" fill="#0ea5e9"/>
-      <rect x="17" y="16" width="46" height="34" rx="11" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
-      <rect class="re1" x="24" y="25" width="11" height="11" rx="3" fill="#0ea5e9"/>
-      <rect class="re2" x="45" y="25" width="11" height="11" rx="3" fill="#0ea5e9"/>
-      <path d="M30 40 Q40 46 50 40" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5" stroke-linecap="round"/>
-      <rect x="34" y="50" width="12" height="6" rx="2" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-      <rect x="13" y="56" width="54" height="44" rx="9" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
-      <rect x="24" y="64" width="32" height="20" rx="5" fill="#0d1117" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
-      <circle cx="32" cy="74" r="4" class="rp1" fill="#0ea5e9"/>
-      <circle id="moodDot" cx="40" cy="74" r="4" class="rp2" fill="#64748b"/>
-      <circle cx="48" cy="74" r="4" class="rp3" fill="#0ea5e9"/>
-      <rect x="2" y="58" width="11" height="29" rx="5" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
-      <rect x="67" y="58" width="11" height="29" rx="5" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
-      <rect x="22" y="100" width="12" height="9" rx="4" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
-      <rect x="46" y="100" width="12" height="9" rx="4" fill="#161b22" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
-    </svg>
-    <div style="text-align:center;font-size:10px;font-weight:600;color:#484f58;margin-top:2px">CLEO</div>
-  </div>
+  <div class="cursor-poke-note" id="pokeNote">DO NOT POKE..</div>
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-
-/* =============================================
-   CONFIGURATION — Update these for your site
-   ============================================= */
-var SITE_URL  = '/sites/EISDSite';
-var LIST_GUID = '10c626f3-3000-4ccf-bf87-48fd468f7c26';
-var DATE_COL  = 'SupportContractExpiryDate';
-
-/* =============================================
-   DO NOT EDIT BELOW THIS LINE
-   ============================================= */
-var LABELS = ['Expired', '< 3 months', '3\u20136 months', '> 6 months', 'No expiry date'];
-var COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#64748b'];
-
-function fetchAllItems() {
-  var items = [];
-  var url = SITE_URL + "/_api/web/lists(guid'" + LIST_GUID + "')/items?$select=" + DATE_COL + "&$top=5000";
-
-  function getPage(pageUrl) {
-    return fetch(pageUrl, {
-      headers: { 'Accept': 'application/json;odata=nometadata' }
-    })
-    .then(function(res) {
-      if (!res.ok) throw new Error('SharePoint returned ' + res.status + '. Check the list GUID and site URL.');
-      return res.json();
-    })
-    .then(function(data) {
-      items = items.concat(data.value);
-      if (data['odata.nextLink']) return getPage(data['odata.nextLink']);
-      return items;
-    });
+const moods = [
+  {
+    name: "cheeky",
+    wrapperClass: "mode-cheeky",
+    visorFill: "url(#vGCheeky)",
+    mouthD: "M132 100 Q140 108 148 100",
+    mouthStroke: "#ffaa00",
+    blushOpacity: "1",
+    earFill: "url(#earGlowCheeky)",
+    antennaColor: "#ffaa00",
+    glowFilter: "drop-shadow(0 16px 40px rgba(255,170,0,0.22))",
+    bubbleClass: "bubble-cheeky",
+    cursorColor: "#ffaa00",
+    highlightClass: "text-highlight-cheeky",
+    highlightWords: ["boss", "switch tabs", "management"],
+    particles: "sparks",
+    phrases: [
+      "Done or not? Don't wait until boss comes after you! 🫣",
+      "Are we working hard or hardly working over here? 👀",
+      "I won't tell management if you switch tabs right now. 🤫",
+      "Productivity detected: 12%. Sneaking detected: 100%. 😏"
+    ]
+  },
+  {
+    name: "panic",
+    wrapperClass: "mode-panic",
+    visorFill: "url(#vGPanic)",
+    mouthD: "M130 104 L150 104",
+    mouthStroke: "#ff3b3b",
+    blushOpacity: "0.1",
+    earFill: "url(#earGlowPanic)",
+    antennaColor: "#ff3b3b",
+    glowFilter: "drop-shadow(0 16px 40px rgba(255,50,50,0.4))",
+    bubbleClass: "bubble-panic",
+    cursorColor: "#ff3b3b",
+    highlightClass: "text-highlight-panic",
+    highlightWords: ["ERROR", "Warning", "CRITICAL", "overload"],
+    particles: "sparks",
+    phrases: [
+      "ERROR 404: Sleep not found. Send coffee immediately! ☕",
+      "CRITICAL overload! Too many requests! Meltdown initialized! 💥",
+      "Warning: Human interaction threshold exceeded. Panic routine now active!",
+      "ERROR: Brain capacity full. Please restart human. ⚠️"
+    ]
+  },
+  {
+    name: "dreamy",
+    wrapperClass: "mode-dreamy",
+    visorFill: "url(#vGDreamy)",
+    mouthD: "M131 101 Q140 109 149 101",
+    mouthStroke: "#b899ff",
+    blushOpacity: "0.7",
+    earFill: "url(#earGlowDreamy)",
+    antennaColor: "#c8a0ff",
+    glowFilter: "drop-shadow(0 16px 40px rgba(160,100,255,0.28))",
+    bubbleClass: "bubble-dreamy",
+    cursorColor: "#b899ff",
+    highlightClass: "text-highlight-dreamy",
+    highlightWords: ["dream", "stars", "float", "wonder"],
+    particles: "stars",
+    phrases: [
+      "Shhh… do you hear that? That's the sound of zero notifications. ✨",
+      "Sometimes I dream of floating through a sea of data… 🌙",
+      "Wonder if the stars have their own to-do lists… probably not. 💫",
+      "Let's just float here a moment. The bugs can wait. 🌸"
+    ]
   }
+];
 
-  return getPage(url);
+let currentMoodIdx = 0;
+let charIdx = 0, typingTimer = null, particleInterval = null;
+let isHovered = false;
+let exitTimeout = null;
+let activePresence = false;
+
+const widget        = document.getElementById('cleoWidget');
+const container     = document.getElementById('cleoContainer');
+const glowWrap      = document.getElementById('cleoGlowWrap');
+const visor         = document.getElementById('visorBg');
+const mouth         = document.getElementById('robotMouth');
+const blushL        = document.getElementById('blushLeft');
+const blushR        = document.getElementById('blushRight');
+const earL          = document.getElementById('earLeft');
+const earR          = document.getElementById('earRight');
+const antStem       = document.getElementById('antennaStem');
+const antNode       = document.getElementById('antennaGlowNode');
+const bubble        = document.getElementById('chatBubble');
+const typed         = document.getElementById('typedText');
+const cursor        = document.getElementById('cursor');
+const pokeNote      = document.getElementById('pokeNote');
+const bodyTarget    = document.getElementById('cleoBodyTarget');
+
+const eyeLP         = document.getElementById('eyeLeftPupil');
+const eyeRP         = document.getElementById('eyeRightPupil');
+const eyeLS         = document.getElementById('eyeLeftShine');
+const eyeRS         = document.getElementById('eyeRightShine');
+const svg           = widget.querySelector('svg');
+
+const eyeBaseL = { cx: 112, cy: 84 };
+const eyeBaseR = { cx: 168, cy: 84 };
+const maxOffset = 3.1; // Balanced max bounds tracking constraint 
+
+function trackMouseInteractions(e) {
+  if (!activePresence || container.classList.contains('rocket-jetting-right')) return;
+  
+  // 1. Precise Vector Eye Tracking Loop
+  const rect = svg.getBoundingClientRect();
+  const mx = ((e.clientX - rect.left) / rect.width) * 280;
+  const my = ((e.clientY - rect.top)  / rect.height) * 430;
+
+  function movePupil(base, pupilEl, shineEl) {
+    const dx = mx - base.cx;
+    const dy = my - base.cy;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    const ox = (dx/dist) * Math.min(dist * 0.15, maxOffset);
+    const oy = (dy/dist) * Math.min(dist * 0.15, maxOffset);
+    pupilEl.setAttribute('cx', base.cx + ox);
+    pupilEl.setAttribute('cy', base.cy + oy);
+    shineEl.setAttribute('cx', base.cx + ox - 2.5);
+    shineEl.setAttribute('cy', base.cy + oy - 2.5);
+  }
+  movePupil(eyeBaseL, eyeLP, eyeLS);
+  movePupil(eyeBaseR, eyeRP, eyeRS);
+
+  // 2. Continuous Note Boundary Alignment
+  const widgetRect = widget.getBoundingClientRect();
+  const noteX = e.clientX - widgetRect.left;
+  const noteY = e.clientY - widgetRect.top;
+  pokeNote.style.left = noteX + 'px';
+  pokeNote.style.top = noteY + 'px';
 }
 
-function calcBuckets(items) {
-  var today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  var m3 = new Date(today);
-  m3.setMonth(m3.getMonth() + 3);
-
-  var m6 = new Date(today);
-  m6.setMonth(m6.getMonth() + 6);
-
-  var c = { expired: 0, lt3: 0, m3t6: 0, gt6: 0, noDate: 0 };
-
-  items.forEach(function(item) {
-    var val = item[DATE_COL];
-    if (!val) { c.noDate++; return; }
-    var d = new Date(val);
-    if (d < today) c.expired++;
-    else if (d < m3) c.lt3++;
-    else if (d < m6) c.m3t6++;
-    else c.gt6++;
-  });
-
-  return c;
+function resetPupils() {
+  eyeLP.setAttribute('cx', eyeBaseL.cx); eyeLP.setAttribute('cy', eyeBaseL.cy);
+  eyeRP.setAttribute('cx', eyeBaseR.cx); eyeRP.setAttribute('cy', eyeBaseR.cy);
+  eyeLS.setAttribute('cx', 109.5); eyeLS.setAttribute('cy', 81.5);
+  eyeRS.setAttribute('cx', 165.5); eyeRS.setAttribute('cy', 81.5);
 }
 
-function render(c) {
-  var total = c.expired + c.lt3 + c.m3t6 + c.gt6 + c.noDate;
-  var vals = [c.expired, c.lt3, c.m3t6, c.gt6, c.noDate];
-  var score = total > 0 ? Math.round((total - c.expired) / total * 100) : 100;
+// Global move trigger handler
+window.addEventListener('mousemove', (e) => {
+  if (isHovered) {
+    trackMouseInteractions(e);
+  }
+});
 
-  var circ = 2 * Math.PI * 28;
-  var scoreColor = score >= 75 ? '#22c55e' : score >= 50 ? '#f97316' : '#ef4444';
-  var scoreLabel = score >= 75 ? 'Healthy' : score >= 50 ? 'At risk' : 'Critical';
+// Structural mood layout switch controller
+widget.addEventListener('click', () => {
+  if (!isHovered || !activePresence || container.classList.contains('rocket-jetting-right') || container.classList.contains('rocket-spawning')) return;
+  currentMoodIdx = (currentMoodIdx + 1) % moods.length;
+  applyMoodStyle();
+  triggerTyping();
+});
 
-  document.getElementById('gaugeArc').setAttribute('stroke-dasharray', (circ * score / 100).toFixed(1) + ' ' + circ.toFixed(1));
-  document.getElementById('gaugeArc').setAttribute('stroke', scoreColor);
-  document.getElementById('gaugeTxt').textContent = score + '%';
-  document.getElementById('gaugeLbl').textContent = scoreLabel;
+// App Window Interface Logic Bounds
+widget.addEventListener('mouseenter', () => {
+  isHovered = true;
+  widget.classList.add('active-hover');
+  container.classList.add('cleo-body-hovered');
 
-  if (c.expired > 0) {
-    document.getElementById('alertBanner').style.display = 'flex';
-    document.getElementById('alertText').textContent = c.expired + ' item' + (c.expired !== 1 ? 's' : '') + ' expired \u2014 immediate action required';
+  if (exitTimeout) {
+    clearTimeout(exitTimeout);
+    exitTimeout = null;
   }
 
-  document.getElementById('totalNum').textContent = total;
+  if (!activePresence) {
+    executeCoolRocketIntro();
+  } else {
+    if(container.classList.contains('rocket-jetting-right')) {
+      container.classList.remove('rocket-jetting-right', 'engine-firing');
+      resetToSystemDefaults();
+    }
+    bubble.classList.add('visible');
+    applyMoodStyle();
+    triggerTyping();
+  }
+});
 
-  new Chart(document.getElementById('myChart'), {
-    type: 'doughnut',
-    data: {
-      labels: LABELS,
-      datasets: [{
-        data: vals,
-        backgroundColor: COLORS,
-        borderWidth: 2,
-        borderColor: '#06080f',
-        hoverOffset: 6
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '62%',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(ctx) {
-              var pct = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
-              return ' ' + ctx.label + ': ' + ctx.raw + ' (' + pct + '%)';
-            }
-          }
-        }
+widget.addEventListener('mouseleave', () => {
+  isHovered = false;
+  widget.classList.remove('active-hover');
+  container.classList.remove('cleo-body-hovered');
+  bubble.classList.remove('visible');
+  pokeNote.classList.remove('visible');
+  stopParticles();
+  resetPupils();
+  resetArmMovementStyles();
+
+  exitTimeout = setTimeout(() => {
+    if (!isHovered && activePresence) {
+      executeCoolRocketExitRight();
+    }
+  }, 10000);
+});
+
+/* Strict explicit target constraint handler for the floating helper label */
+bodyTarget.addEventListener('mouseenter', () => {
+  if (activePresence && !container.classList.contains('rocket-jetting-right')) {
+    pokeNote.classList.add('visible');
+  }
+});
+
+bodyTarget.addEventListener('mouseleave', () => {
+  pokeNote.classList.remove('visible');
+});
+
+
+function executeCoolRocketIntro() {
+  activePresence = true;
+  container.classList.remove('rocket-jetting-right');
+  container.classList.add('engine-firing', 'rocket-spawning');
+  
+  setTimeout(() => {
+    container.classList.remove('engine-firing', 'rocket-spawning');
+    container.classList.add('ready');
+    
+    if (isHovered) {
+      bubble.classList.add('visible');
+      applyMoodStyle();
+      triggerTyping();
+    }
+  }, 1050);
+}
+
+function resetArmMovementStyles() {
+  widget.classList.remove('mode-cheeky', 'mode-panic', 'mode-dreamy', 'mode-bye');
+}
+
+function executeCoolRocketExitRight() {
+  if (isHovered) return;
+
+  widget.className = "widget-wrapper mode-bye";
+  visor.setAttribute('fill', 'url(#vGBye)');
+  mouth.setAttribute('d', 'M130 102 Q140 107 150 102'); 
+  mouth.setAttribute('stroke', '#ff7300');
+  
+  antStem.setAttribute('fill', '#ff7300');
+  antNode.setAttribute('fill', '#ff7300');
+  earL.setAttribute('fill', 'url(#earGlowBye)');
+  earR.setAttribute('fill', 'url(#earGlowBye)');
+  
+  glowWrap.style.filter = "drop-shadow(0 16px 40px rgba(255,115,0,0.18))";
+
+  bubble.className = "chat-bubble visible bubble-bye";
+  cursor.style.background = "#ff7300";
+  cursor.style.boxShadow = "0 0 8px #ff7300";
+  resetTyping();
+  
+  const byePhrase = "Blasting off! Catch you later! 🚀⚡";
+  
+  function typeBye(idx) {
+    if (isHovered || idx >= byePhrase.length) {
+      if (!isHovered) {
+        setTimeout(() => {
+          if (isHovered) return;
+          bubble.classList.remove('visible');
+          
+          container.classList.add('engine-firing', 'rocket-jetting-right');
+          startRocketSparkTrail();
+
+          setTimeout(() => {
+            if (isHovered) return;
+            container.classList.remove('ready', 'engine-firing', 'rocket-jetting-right');
+            stopParticles();
+            resetToSystemDefaults();
+            activePresence = false;
+          }, 750);
+        }, 1200);
       }
+      return;
     }
-  });
-
-  document.getElementById('legend').innerHTML = LABELS.map(function(lb, i) {
-    return '<span style="display:flex;align-items:center;gap:3px">' +
-      '<span style="width:9px;height:9px;border-radius:2px;background:' + COLORS[i] + ';flex-shrink:0"></span>' +
-      lb + ': ' + vals[i] + '</span>';
-  }).join('');
-
-  document.getElementById('stats').innerHTML = LABELS.map(function(lb, i) {
-    var p = total > 0 ? Math.round(vals[i] / total * 100) : 0;
-    return '<div style="margin-bottom:12px">' +
-      '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">' +
-        '<span style="color:#8b949e">' + lb + '</span>' +
-        '<span style="font-weight:600;color:' + COLORS[i] + '">' + vals[i] +
-          '<span style="font-weight:400;color:#484f58;font-size:11px"> (' + p + '%)</span>' +
-        '</span>' +
-      '</div>' +
-      '<div class="bar-track"><div class="bar-fill" style="width:' + p + '%;background:' + COLORS[i] + '"></div></div>' +
-    '</div>';
-  }).join('');
-
-  document.getElementById('moodDot').setAttribute('fill', scoreColor);
-
-  var msgs = [
-    c.expired + ' item' + (c.expired !== 1 ? 's' : '') + ' expired \u2014 action needed!',
-    c.lt3 + ' expiring in under 3 months',
-    'Compliance score: ' + score + '%',
-    c.gt6 + ' items safe with 6+ months',
-    total + ' items tracked in total'
-  ];
-  var idx = 0;
-  document.getElementById('cleoText').textContent = msgs[0];
-
-  setInterval(function() {
-    idx = (idx + 1) % msgs.length;
-    document.getElementById('cleoText').textContent = msgs[idx];
-  }, 5000);
-
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('cleoWrap').style.display = 'block';
+    const ch = byePhrase[idx];
+    const span = document.createElement('span');
+    span.textContent = ch;
+    if (idx > 13) span.className = "text-highlight-bye";
+    typed.insertBefore(span, cursor);
+    setTimeout(() => typeBye(idx + 1), 40);
+  }
+  
+  typeBye(0);
 }
 
-function showError(msg) {
-  document.getElementById('loadingState').style.display = 'none';
-  var el = document.getElementById('errorState');
-  el.style.display = 'block';
-  el.innerHTML = '<div style="font-size:18px;margin-bottom:8px">&#9888;</div>' + msg;
+function resetToSystemDefaults() {
+  widget.className = "widget-wrapper";
+  bubble.className = "chat-bubble";
+  resetTyping();
+  visor.setAttribute('fill', 'url(#vG)');
+  mouth.setAttribute('d', 'M130 102 Q140 110 150 102');
+  mouth.setAttribute('stroke', '#5ef0ff');
+  blushL.setAttribute('opacity', '0.9');
+  blushR.setAttribute('opacity', '0.9');
+  earL.setAttribute('fill', 'url(#earGlow)');
+  earR.setAttribute('fill', 'url(#earGlow)');
+  antStem.setAttribute('fill', '#00dcff');
+  antNode.setAttribute('fill', '#00dcff');
+  glowWrap.style.filter = "drop-shadow(0 16px 36px rgba(0,180,255,0.22))";
 }
 
-function useMockData() {
-  render({ expired: 17, lt3: 13, m3t6: 10, gt6: 22, noDate: 4 });
-  document.getElementById('cleoText').textContent = 'Running with sample data (not in SharePoint)';
+function startRocketSparkTrail() {
+  stopParticles();
+  particleInterval = setInterval(() => {
+    if (isHovered) return;
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    
+    const rect = container.getBoundingClientRect();
+    const wrapperRect = widget.getBoundingClientRect();
+    
+    const px = (rect.left - wrapperRect.left) + (rect.width / 2) - 10 + (Math.random() * 20);
+    const py = (rect.top - wrapperRect.top) + (rect.height) - 75;
+    
+    spark.style.left = px + 'px';
+    spark.style.top  = py + 'px';
+    spark.style.width = '3px';
+    spark.style.height = '6px';
+    spark.style.borderRadius = '2px';
+    spark.style.background  = Math.random() > 0.4 ? '#ff5500' : '#ffaa00';
+    spark.style.boxShadow   = '0 0 6px #ff3300';
+    widget.appendChild(spark);
+    
+    const anim = spark.animate([
+      { opacity: 1, transform: 'scaleY(1.5) translate(0,0)' },
+      { opacity: 0, transform: 'scaleY(0.2) translate(-20px, 60px)' }
+    ], { duration: 200 + Math.random() * 150, easing: 'ease-out' });
+    anim.onfinish = () => spark.remove();
+  }, 15);
 }
 
-fetchAllItems()
-  .then(calcBuckets)
-  .then(render)
-  .catch(function(err) {
-    if (err.message && (err.message.indexOf('Failed to fetch') > -1 || err.message.indexOf('NetworkError') > -1 || err.message.indexOf('fetch') > -1)) {
-      useMockData();
-    } else {
-      showError('Could not load data: ' + err.message + '<br><br><span style="font-size:12px;color:#8b949e">Make sure this page is hosted on the SharePoint site and the list GUID is correct.</span>');
+function applyMoodStyle() {
+  if (!isHovered || !activePresence || container.classList.contains('rocket-jetting-right')) return;
+  const m = moods[currentMoodIdx];
+
+  widget.className = "widget-wrapper active-hover " + m.wrapperClass;
+  stopParticles();
+
+  bubble.className = "chat-bubble visible " + m.bubbleClass;
+  cursor.style.background = m.cursorColor;
+  cursor.style.boxShadow = `0 0 8px ${m.cursorColor}`;
+
+  visor.setAttribute('fill', m.visorFill);
+  mouth.setAttribute('d', m.mouthD);
+  mouth.setAttribute('stroke', m.mouthStroke);
+  blushL.setAttribute('opacity', m.blushOpacity);
+  blushR.setAttribute('opacity', m.blushOpacity);
+  
+  earL.setAttribute('fill', m.earFill);
+  earR.setAttribute('fill', m.earFill);
+  antStem.setAttribute('fill', m.antennaColor);
+  antNode.setAttribute('fill', m.antennaColor);
+  glowWrap.style.filter = m.glowFilter;
+
+  if (m.particles === "sparks") startSparks();
+  else if (m.particles === "stars") startStars();
+}
+
+function resetTyping() {
+  clearTimeout(typingTimer);
+  typed.innerHTML = '';
+  typed.appendChild(cursor);
+  charIdx = 0;
+}
+
+function triggerTyping() {
+  resetTyping();
+  const m = moods[currentMoodIdx];
+  const phrase = m.phrases[Math.floor(Math.random() * m.phrases.length)];
+  typeNext(phrase, m);
+}
+
+function typeNext(phrase, mood) {
+  if (!isHovered || charIdx >= phrase.length || !activePresence) return;
+
+  const ch = phrase[charIdx];
+  const span = document.createElement('span');
+  span.textContent = ch;
+
+  for (const word of mood.highlightWords) {
+    const idx = phrase.indexOf(word);
+    if (idx >= 0 && charIdx >= idx && charIdx < idx + word.length) {
+      span.classList.add(mood.highlightClass);
+      break;
     }
-  });
+  }
 
+  charIdx++;
+  typed.insertBefore(span, cursor);
+  const delay = ch === '.' || ch === '!' || ch === '?' ? 180 :
+                ch === ',' ? 100 : 20 + Math.random() * 15;
+  typingTimer = setTimeout(() => typeNext(phrase, mood), delay);
+}
+
+function startSparks() {
+  const isPanic = moods[currentMoodIdx].name === "panic";
+  particleInterval = setInterval(() => {
+    if (!isHovered || !activePresence) return;
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    const rx = 35 + Math.random() * 125;
+    const ry = 35 + Math.random() * 210;
+    spark.style.left = rx + 'px';
+    spark.style.top  = ry + 'px';
+    const col = isPanic ? (Math.random() > 0.4 ? '#ff3b3b' : '#ffea00') : (Math.random() > 0.5 ? '#ffaa00' : '#ffe066');
+    spark.style.background  = col;
+    spark.style.boxShadow   = `0 0 6px ${col}`;
+    widget.appendChild(spark);
+    const angle = Math.random() * Math.PI * 2;
+    const v = 20 + Math.random() * 35;
+    const anim = spark.animate([
+      { opacity: 1, transform: 'translate(0,0) scale(1)' },
+      { opacity: 0, transform: `translate(${Math.cos(angle)*v}px,${Math.sin(angle)*v}px) scale(0)` }
+    ], { duration: 380 + Math.random() * 280, easing: 'ease-out' });
+    anim.onfinish = () => spark.remove();
+  }, isPanic ? 80 : 140);
+}
+
+const STARS = ['✦','✧','⋆','·','★','☆'];
+function startStars() {
+  particleInterval = setInterval(() => {
+    if (!isHovered || !activePresence) return;
+    const star = document.createElement('div');
+    star.className = 'star-particle';
+    star.textContent = STARS[Math.floor(Math.random() * STARS.length)];
+    star.style.left  = (20 + Math.random() * 160) + 'px';
+    star.style.top   = (20 + Math.random() * 240) + 'px';
+    const hue = 250 + Math.random() * 60;
+    star.style.color = `hsl(${hue}, 80%, 80%)`;
+    star.style.fontSize = (8 + Math.random() * 10) + 'px';
+    widget.appendChild(star);
+    const anim = star.animate([
+      { opacity: 0,   transform: 'translateY(0) scale(0.5)' },
+      { opacity: 0.9, transform: 'translateY(-12px) scale(1)', offset: 0.3 },
+      { opacity: 0,   transform: 'translateY(-28px) scale(0.7)' }
+    ], { duration: 1200 + Math.random() * 800, easing: 'ease-out' });
+    anim.onfinish = () => star.remove();
+  }, 200);
+}
+
+function stopParticles() {
+  clearInterval(particleInterval);
+  document.querySelectorAll('.spark, .star-particle').forEach(el => el.remove());
+}
 </script>
 </body>
 </html>
